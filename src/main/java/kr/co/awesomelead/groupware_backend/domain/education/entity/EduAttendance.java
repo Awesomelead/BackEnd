@@ -1,3 +1,5 @@
 package kr.co.awesomelead.groupware_backend.domain.education.entity;
 
-public class EduAttendance {}
+public class EduAttendance {
+
+}

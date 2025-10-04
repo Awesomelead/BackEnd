@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     // MethodArgumentNotValidException 예외를 특별히 처리하는 메서드
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
+        MethodArgumentNotValidException ex) {
 
         // 에러 메시지를 담을 Map 생성
         Map<String, String> errors = new HashMap<>();

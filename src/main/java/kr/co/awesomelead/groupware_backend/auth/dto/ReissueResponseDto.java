@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ReissueResponseDto {
+
     private String accessToken;
 }

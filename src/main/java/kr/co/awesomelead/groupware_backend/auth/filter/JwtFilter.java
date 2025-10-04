@@ -26,8 +26,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
         // 1. 요청 헤더에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
 
@@ -49,27 +49,27 @@ public class JwtFilter extends OncePerRequestFilter {
         // 5. 토큰에서 username과 role을 획득
         String username = jwtUtil.getUsername(token);
         userRepository
-                .findByEmail(username)
-                .ifPresent(
-                        user -> {
-                            // 사용자의 상태가 'AVAILABLE'이 아니면 인증하지 않음
-                            if (user.getStatus() != Status.AVAILABLE) {
-                                return; // 인증 객체를 SecurityContext에 저장하지 않고 메소드 종료
-                            }
+            .findByEmail(username)
+            .ifPresent(
+                user -> {
+                    // 사용자의 상태가 'AVAILABLE'이 아니면 인증하지 않음
+                    if (user.getStatus() != Status.AVAILABLE) {
+                        return; // 인증 객체를 SecurityContext에 저장하지 않고 메소드 종료
+                    }
 
-                            // 조회된 실제 사용자 정보로 UserDetails 객체 생성
-                            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+                    // 조회된 실제 사용자 정보로 UserDetails 객체 생성
+                    CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
-                            // Spring Security 인증 토큰 생성
-                            UsernamePasswordAuthenticationToken authToken =
-                                    new UsernamePasswordAuthenticationToken(
-                                            customUserDetails,
-                                            null,
-                                            customUserDetails.getAuthorities());
+                    // Spring Security 인증 토큰 생성
+                    UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                            customUserDetails,
+                            null,
+                            customUserDetails.getAuthorities());
 
-                            // SecurityContext에 인증 정보 저장
-                            SecurityContextHolder.getContext().setAuthentication(authToken);
-                        });
+                    // SecurityContext에 인증 정보 저장
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                });
 
         filterChain.doFilter(request, response);
     }

@@ -21,12 +21,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // loginId로 DB에서 사용자 정보를 조회
         User user =
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(
-                                () ->
-                                        new UsernameNotFoundException(
-                                                email + " 에 해당하는 사용자를 찾을 수 없습니다."));
+            userRepository
+                .findByEmail(email)
+                .orElseThrow(
+                    () ->
+                        new UsernameNotFoundException(
+                            email + " 에 해당하는 사용자를 찾을 수 없습니다."));
 
         // 조회된 사용자 정보를 바탕으로 UserDetails 객체를 생성하여 반환
         return new CustomUserDetails(user);

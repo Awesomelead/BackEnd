@@ -1,17 +1,17 @@
 package kr.co.awesomelead.groupware_backend.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import java.util.Collection;
+import java.util.Iterator;
 import kr.co.awesomelead.groupware_backend.auth.dto.LoginRequestDto;
 import kr.co.awesomelead.groupware_backend.auth.dto.LoginResponseDto;
 import kr.co.awesomelead.groupware_backend.auth.service.RefreshTokenService;
 import kr.co.awesomelead.groupware_backend.auth.util.JWTUtil;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,12 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "로그인, 로그아웃 관련 API")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -37,11 +35,11 @@ public class AuthController {
     @Operation(summary = "로그인", description = "로그인을 합니다.")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(
-            @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
+        @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
 
         UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(
-                        requestDto.getEmail(), requestDto.getPassword(), null);
+            new UsernamePasswordAuthenticationToken(
+                requestDto.getEmail(), requestDto.getPassword(), null);
 
         Authentication authentication = authenticationManager.authenticate(authToken);
 
@@ -62,6 +60,33 @@ public class AuthController {
 
         // JWT를 DTO에 담아 응답
         return ResponseEntity.ok(new LoginResponseDto(accessToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh")) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken != null) {
+            // DB에서 Refresh Token 삭제
+            refreshTokenService.deleteRefreshToken(refreshToken);
+        }
+
+        // 클라이언트 측의 쿠키도 만료시켜서 삭제하도록 응답 설정
+        Cookie cookie = new Cookie("refresh", null); // value를 null로 설정
+        cookie.setMaxAge(0); // 유효기간을 0으로 만들어 즉시 만료
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.noContent().build();
     }
 
     private Cookie createCookie(String key, String value) {

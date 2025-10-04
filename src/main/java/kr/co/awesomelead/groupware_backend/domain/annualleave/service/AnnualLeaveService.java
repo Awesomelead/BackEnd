@@ -22,9 +22,9 @@ public class AnnualLeaveService {
     public AnnualLeave getAnnualLeave(CustomUserDetails userDetails) {
         Long id = userDetails.getId();
         User user =
-                userRepository
-                        .findById(id)
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            userRepository
+                .findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return annualLeaveRepository.findByUser(user);
     }
 }

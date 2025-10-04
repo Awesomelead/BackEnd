@@ -24,7 +24,7 @@ public class AnnualLeaveController {
     @Operation(summary = "연차 조회", description = "연차 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<AnnualLeave> getAnnualLeave(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(annualLeaveService.getAnnualLeave(userDetails));
     }
 }

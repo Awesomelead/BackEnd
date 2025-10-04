@@ -20,7 +20,7 @@ public class AdminController {
     @Operation(summary = "회원가입 승인", description = "관리자가 회원가입 요청에 대해 승인합니다.")
     @PatchMapping("/users/{userId}/approve")
     public ResponseEntity<String> approveUser(
-            @PathVariable("userId") Long userId, @RequestBody UserApprovalRequestDto requestDto) {
+        @PathVariable("userId") Long userId, @RequestBody UserApprovalRequestDto requestDto) {
 
         adminService.approveUserRegistration(userId, requestDto);
 
